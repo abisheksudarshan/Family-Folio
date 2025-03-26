@@ -13,15 +13,18 @@ import {
   IconButton,
   Stepper,
   Step,
-  StepLabel
+  StepLabel,
+  CircularProgress
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import Avatar from '@mui/material/Avatar';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     firstName: '',
@@ -33,6 +36,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const steps = ['Account Information', 'Security'];
 
@@ -106,18 +110,42 @@ const Register = () => {
     e.preventDefault();
     
     if (activeStep === 1 && validateStep2()) {
+      setIsLoading(true);
       try {
-        // Placeholder for API call
+        // In a real app, you would make an API call to your backend
         // const response = await axios.post('http://localhost:8000/api/auth/register', formData);
-        console.log('Registration successful', formData);
         
-        // Redirect to login page after successful registration
-        navigate('/login', { state: { registrationSuccess: true } });
+        // For demonstration purposes, we'll simulate a successful registration
+        setTimeout(() => {
+          console.log('Registration successful', formData);
+          
+          // Option 1: Redirect to login page
+          navigate('/login', { 
+            state: { 
+              registrationSuccess: true,
+              email: formData.email 
+            } 
+          });
+          
+          // Option 2: Auto-login after registration
+          // const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+          // const mockUser = {
+          //   id: '1',
+          //   firstName: formData.firstName,
+          //   lastName: formData.lastName,
+          //   email: formData.email
+          // };
+          // login(mockToken, mockUser);
+          // navigate('/dashboard');
+          
+          setIsLoading(false);
+        }, 1500); // Simulate network delay
       } catch (error) {
         console.error('Registration failed', error);
         setErrors({
           form: 'Registration failed. Please try again.'
         });
+        setIsLoading(false);
       }
     }
   };
@@ -280,15 +308,16 @@ const Register = () => {
               <Button
                 type="submit"
                 variant="contained"
+                disabled={isLoading}
               >
-                Register
+                {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Register'}
               </Button>
             )}
           </Box>
           
           <Grid container justifyContent="flex-end" sx={{ mt: 2 }}>
             <Grid item>
-              <Link href="/login" variant="body2">
+              <Link component={RouterLink} to="/login" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>
