@@ -3,11 +3,28 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import { Box } from '@mui/material';
+
+// Layout Components
+import Navigation from './components/Navigation';
 
 // Pages
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Assets from './pages/Assets';
+import Transactions from './pages/Transactions';
+import PortfolioAnalytics from './pages/PortfolioAnalytics';
+import ExpenseAnalytics from './pages/ExpenseAnalytics';
+import Budget from './pages/Budget';
+import Goals from './pages/Goals';
+import Income from './pages/Income';
+import Bills from './pages/Bills';
+import Reports from './pages/Reports';
+import TaxPlanning from './pages/TaxPlanning';
+import NetWorth from './pages/NetWorth';
+import Settings from './pages/Settings';
+import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 
 // Auth Context
@@ -50,6 +67,27 @@ const theme = createTheme({
   },
 });
 
+// Layout component for authenticated pages
+const ProtectedLayout = ({ children }) => {
+  return (
+    <Box sx={{ display: 'flex' }}>
+      <Navigation />
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - 240px)` },
+          ml: { sm: '240px' },
+          mt: ['48px', '56px', '64px'], // Toolbar height for different breakpoints
+        }}
+      >
+        {children}
+      </Box>
+    </Box>
+  );
+};
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -78,7 +116,152 @@ const AppRoutes = () => {
         path="/dashboard" 
         element={
           <ProtectedRoute>
-            <Dashboard />
+            <ProtectedLayout>
+              <Dashboard />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/assets" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Assets />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/transactions" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Transactions />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/portfolio-analytics" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <PortfolioAnalytics />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/expense-analytics" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <ExpenseAnalytics />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/budget" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Budget />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/goals" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Goals />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/income" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Income />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/bills" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Bills />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/reports" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Reports />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/tax-planning" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <TaxPlanning />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/net-worth" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <NetWorth />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/settings" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Settings />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+      
+      <Route 
+        path="/profile" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <Profile />
+            </ProtectedLayout>
           </ProtectedRoute>
         } 
       />
