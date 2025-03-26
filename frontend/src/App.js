@@ -78,7 +78,7 @@ const ProtectedLayout = ({ children }) => {
           flexGrow: 1,
           p: 3,
           width: { sm: `calc(100% - 240px)` },
-          ml: { sm: '240px' },
+          ml: { sm: '40px' },
           mt: ['48px', '56px', '64px'], // Toolbar height for different breakpoints
         }}
       >
