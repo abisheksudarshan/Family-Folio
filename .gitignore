@@ -1,0 +1,69 @@
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# React build
+frontend/build/
+frontend/coverage/
+
+# Python
+*.log
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.coverage.*
+*.cover
+.hypothesis/
+.python-version
+
+# Docker
+.docker/
+
+# Database
+*.sqlite3
+postgres_data/
+
+# Credentials
+credentials.json
+token.json
+service_account.json
+
+# Temporary files
+tmp/
+temp/
+.tmp/
