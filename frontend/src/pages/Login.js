@@ -11,7 +11,11 @@ import {
   Grid,
   InputAdornment,
   IconButton,
-  CircularProgress
+  CircularProgress,
+  FormHelperText,
+  Divider,
+  useTheme,
+  alpha
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -20,6 +24,7 @@ import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { login } = useAuth();
   const [formData, setFormData] = useState({
@@ -108,90 +113,259 @@ const Login = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Paper elevation={3} sx={{ mt: 8, p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign in to Family Folio
-        </Typography>
-        
-        {errors.form && (
-          <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-            {errors.form}
-          </Typography>
-        )}
-        
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: '100%' }}>
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            value={formData.email}
-            onChange={handleChange}
-            error={Boolean(errors.email)}
-            helperText={errors.email}
-          />
-          
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type={showPassword ? 'text' : 'password'}
-            id="password"
-            autoComplete="current-password"
-            value={formData.password}
-            onChange={handleChange}
-            error={Boolean(errors.password)}
-            helperText={errors.password}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="toggle password visibility"
-                    onClick={handleTogglePasswordVisibility}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              )
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: `linear-gradient(135deg, ${alpha(theme.palette.primary.light, 0.2)} 0%, ${alpha(theme.palette.primary.main, 0.3)} 100%)`,
+        py: 12
+      }}
+    >
+      <Container maxWidth="xs">
+        <Paper
+          elevation={10}
+          sx={{
+            p: 4,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            borderRadius: 3,
+            background: 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(10px)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08)'
+          }}
+        >
+          <Avatar
+            sx={{
+              m: 1,
+              bgcolor: theme.palette.primary.main,
+              width: 56,
+              height: 56,
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
             }}
-          />
-          
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-            disabled={isLoading}
           >
-            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
-          </Button>
+            <LockOutlinedIcon fontSize="large" />
+          </Avatar>
           
-          <Grid container>
-            <Grid item xs>
-              <Link component={RouterLink} to="/forgot-password" variant="body2">
+          <Typography
+            component="h1"
+            variant="h4"
+            fontWeight="600"
+            sx={{ mb: 0.5 }}
+          >
+            Welcome Back
+          </Typography>
+          
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            align="center"
+            sx={{ mb: 3 }}
+          >
+            Sign in to Family Folio to manage your finances
+          </Typography>
+          
+          {errors.form && (
+            <Box
+              sx={{
+                width: '100%',
+                p: 2,
+                mb: 2,
+                bgcolor: alpha(theme.palette.error.main, 0.1),
+                color: theme.palette.error.main,
+                borderRadius: 1,
+                textAlign: 'center'
+              }}
+            >
+              <Typography variant="body2">{errors.form}</Typography>
+            </Box>
+          )}
+          
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            sx={{ width: '100%' }}
+          >
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={formData.email}
+              onChange={handleChange}
+              error={Boolean(errors.email)}
+              helperText={errors.email}
+              variant="outlined"
+              sx={{
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+            />
+            
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              id="password"
+              autoComplete="current-password"
+              value={formData.password}
+              onChange={handleChange}
+              error={Boolean(errors.password)}
+              helperText={errors.password}
+              variant="outlined"
+              sx={{
+                mb: 1,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2
+                }
+              }}
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleTogglePasswordVisibility}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
+            />
+            
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <Link
+                component={RouterLink}
+                to="/forgot-password"
+                variant="body2"
+                color="primary"
+                sx={{ textDecoration: 'none' }}
+              >
                 Forgot password?
               </Link>
-            </Grid>
-            <Grid item>
-              <Link component={RouterLink} to="/register" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
-        </Box>
-      </Paper>
-    </Container>
+            </Box>
+            
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              size="large"
+              disabled={isLoading}
+              sx={{
+                mt: 2,
+                mb: 3,
+                py: 1.5,
+                borderRadius: 2,
+                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                position: 'relative'
+              }}
+            >
+              {isLoading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Sign In"
+              )}
+            </Button>
+            
+            <Box
+              sx={{
+                position: 'relative',
+                mt: 1,
+                mb: 4,
+                display: 'flex',
+                alignItems: 'center'
+              }}
+            >
+              <Divider sx={{ flex: 1 }} />
+              <Typography 
+                variant="body2" 
+                color="text.secondary" 
+                sx={{ px: 2, bgcolor: 'background.paper' }}
+              >
+                Or continue with
+              </Typography>
+              <Divider sx={{ flex: 1 }} />
+            </Box>
+            
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, mb: 3 }}>
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => console.log('Google login')}
+                startIcon={
+                  <Box component="img" src="https://cdn.cdnlogo.com/logos/g/35/google-icon.svg" sx={{ width: 20, height: 20 }} />
+                }
+                sx={{ 
+                  borderRadius: 2,
+                  flex: 1,
+                  px: 2,
+                  py: 1.5,
+                  color: 'text.primary',
+                  borderColor: alpha('#000', 0.2),
+                  '&:hover': {
+                    borderColor: alpha('#000', 0.3),
+                    bgcolor: alpha('#000', 0.05)
+                  }
+                }}
+              >
+                Google
+              </Button>
+              
+              <Button
+                variant="outlined"
+                size="large"
+                onClick={() => console.log('Apple login')}
+                startIcon={
+                  <Box component="img" src="https://cdn.cdnlogo.com/logos/a/10/apple.svg" sx={{ width: 20, height: 20 }} />
+                }
+                sx={{ 
+                  borderRadius: 2,
+                  flex: 1,
+                  px: 2,
+                  py: 1.5,
+                  color: 'text.primary',
+                  borderColor: alpha('#000', 0.2),
+                  '&:hover': {
+                    borderColor: alpha('#000', 0.3),
+                    bgcolor: alpha('#000', 0.05)
+                  }
+                }}
+              >
+                Apple
+              </Button>
+            </Box>
+            
+            <Box sx={{ textAlign: 'center' }}>
+              <Typography variant="body2" color="text.secondary">
+                Don't have an account?{' '}
+                <Link
+                  component={RouterLink}
+                  to="/register"
+                  variant="subtitle2"
+                  color="primary"
+                  fontWeight="600"
+                  sx={{ textDecoration: 'none' }}
+                >
+                  Sign Up
+                </Link>
+              </Typography>
+            </Box>
+          </Box>
+        </Paper>
+      </Container>
+    </Box>
   );
 };
 
