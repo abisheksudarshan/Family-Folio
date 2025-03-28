@@ -64,7 +64,7 @@ const Navigation = () => {
   
   // State to track opened submenu items
   const [openSubMenus, setOpenSubMenus] = useState({
-    netWorth: false,
+    assetsLiabilities: false,
     spending: false,
     planning: false
   });
@@ -74,8 +74,8 @@ const Navigation = () => {
     // Automatically open submenu of the active route
     const currentPath = location.pathname;
     
-    if (['/net-worth', '/portfolio-analytics'].includes(currentPath)) {
-      setOpenSubMenus(prev => ({ ...prev, netWorth: true }));
+    if (['/assets-liabilities', '/portfolio-analytics'].includes(currentPath)) {
+      setOpenSubMenus(prev => ({ ...prev, assetsLiabilities: true }));
     } else if (['/expense-analytics', '/budget', '/bills'].includes(currentPath)) {
       setOpenSubMenus(prev => ({ ...prev, spending: true }));
     } else if (['/goals', '/income', '/reports', '/tax-planning'].includes(currentPath)) {
@@ -123,8 +123,8 @@ const Navigation = () => {
 
   // Check if a route belongs to a submenu
   const isInSubMenu = (submenu, path) => {
-    if (submenu === 'netWorth') {
-      return ['/net-worth', '/portfolio-analytics'].includes(path);
+    if (submenu === 'assetsLiabilities') {
+      return ['/assets-liabilities', '/portfolio-analytics'].includes(path);
     } else if (submenu === 'spending') {
       return ['/expense-analytics', '/budget', '/bills'].includes(path);
     } else if (submenu === 'planning') {
@@ -143,12 +143,12 @@ const Navigation = () => {
       hasSubmenu: false
     },
     {
-      id: 'netWorth',
+      id: 'assetsLiabilities',
       label: 'Net Worth',
       icon: <TrendingUpIcon />,
       hasSubmenu: true,
       submenuItems: [
-        { label: 'Overview', path: '/net-worth', icon: <AccountBalanceIcon /> },
+        { label: 'Assets & Liabilities', path: '/assets-liabilities', icon: <AccountBalanceIcon /> },
         { label: 'Portfolio Analytics', path: '/portfolio-analytics', icon: <PieChartIcon /> }
       ]
     },

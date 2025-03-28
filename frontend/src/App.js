@@ -22,10 +22,10 @@ import Income from './pages/Income';
 import Bills from './pages/Bills';
 import Reports from './pages/Reports';
 import TaxPlanning from './pages/TaxPlanning';
-import NetWorth from './pages/NetWorth';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
+import AssetsLiabilities from './pages/AssetsLiabilities';
 
 // Auth Context
 import AuthProvider, { useAuth } from './contexts/AuthContext';
@@ -234,11 +234,11 @@ const AppRoutes = () => {
       />
       
       <Route 
-        path="/net-worth" 
+        path="/assets-liabilities" 
         element={
           <ProtectedRoute>
             <ProtectedLayout>
-              <NetWorth />
+              <AssetsLiabilities />
             </ProtectedLayout>
           </ProtectedRoute>
         } 
