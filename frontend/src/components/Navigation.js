@@ -50,6 +50,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import SearchIcon from '@mui/icons-material/Search';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import CreditCardIcon from '@mui/icons-material/CreditCard';
 
 const drawerWidth = 280;
 
@@ -74,11 +75,11 @@ const Navigation = () => {
     // Automatically open submenu of the active route
     const currentPath = location.pathname;
     
-    if (['/assets-liabilities', '/portfolio-analytics'].includes(currentPath)) {
+    if (['/assets-liabilities', '/portfolio-breakdown'].includes(currentPath)) {
       setOpenSubMenus(prev => ({ ...prev, assetsLiabilities: true }));
-    } else if (['/expense-analytics', '/budget', '/bills'].includes(currentPath)) {
+    } else if (['/expense-breakdown', '/bills-subscriptions', '/credit-card-strategy'].includes(currentPath)) {
       setOpenSubMenus(prev => ({ ...prev, spending: true }));
-    } else if (['/goals', '/income', '/reports', '/tax-planning'].includes(currentPath)) {
+    } else if (['/goals', '/income', '/tax-planning'].includes(currentPath)) {
       setOpenSubMenus(prev => ({ ...prev, planning: true }));
     }
   }, [location.pathname]);
@@ -124,11 +125,11 @@ const Navigation = () => {
   // Check if a route belongs to a submenu
   const isInSubMenu = (submenu, path) => {
     if (submenu === 'assetsLiabilities') {
-      return ['/assets-liabilities', '/portfolio-analytics'].includes(path);
+      return ['/assets-liabilities', '/portfolio-breakdown'].includes(path);
     } else if (submenu === 'spending') {
-      return ['/expense-analytics', '/budget', '/bills'].includes(path);
+      return ['/expense-breakdown', '/bills-subscriptions','/credit-card-strategy'].includes(path);
     } else if (submenu === 'planning') {
-      return ['/goals', '/income', '/reports', '/tax-planning'].includes(path);
+      return ['/goals', '/income', '/tax-planning'].includes(path);
     }
     return false;
   };
@@ -149,7 +150,7 @@ const Navigation = () => {
       hasSubmenu: true,
       submenuItems: [
         { label: 'Assets & Liabilities', path: '/assets-liabilities', icon: <AccountBalanceIcon /> },
-        { label: 'Portfolio Analytics', path: '/portfolio-analytics', icon: <PieChartIcon /> }
+        { label: 'Portfolio Breakdown', path: '/portfolio-breakdown', icon: <PieChartIcon /> }
       ]
     },
     {
@@ -158,9 +159,9 @@ const Navigation = () => {
       icon: <AccountBalanceWalletIcon />,
       hasSubmenu: true,
       submenuItems: [
-        { label: 'Expense Analytics', path: '/expense-analytics', icon: <MonetizationOnIcon /> },
-        { label: 'Budget', path: '/budget', icon: <CalculateIcon /> },
-        { label: 'Bills & Subscriptions', path: '/bills', icon: <ReceiptIcon /> }
+        { label: 'Expense Breakdown', path: '/expense-breakdown', icon: <CalculateIcon /> },
+        { label: 'Bills & Subscriptions', path: '/bills-subscriptions', icon: <ReceiptIcon /> },
+        { label: 'Credit Card Strategy', path: '/credit-card-strategy', icon: <CreditCardIcon /> }
       ]
     },
     {
@@ -171,7 +172,6 @@ const Navigation = () => {
       submenuItems: [
         { label: 'Goals', path: '/goals', icon: <CalendarTodayIcon /> },
         { label: 'Income', path: '/income', icon: <PaymentsIcon /> },
-        { label: 'Reports', path: '/reports', icon: <DescriptionIcon /> },
         { label: 'Tax Planning', path: '/tax-planning', icon: <CalculateIcon /> }
       ]
     }
@@ -253,7 +253,7 @@ const Navigation = () => {
                       '&:hover': {
                         backgroundColor: isInSubMenu(item.id, location.pathname) 
                           ? alpha(theme.palette.primary.main, 0.15) 
-                          : alpha(theme.palette.action.hover, 0.8)
+                          : alpha(theme.palette.action.hover, 0.3)
                       }
                     }}
                   >

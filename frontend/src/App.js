@@ -12,20 +12,18 @@ import Navigation from './components/Navigation';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
-import Assets from './pages/Assets';
 import Transactions from './pages/Transactions';
-import PortfolioAnalytics from './pages/PortfolioAnalytics';
-import ExpenseAnalytics from './pages/ExpenseAnalytics';
-import Budget from './pages/Budget';
+import PortfolioBreakdown from './pages/PortfolioBreakdown';
+import ExpenseBreakdown from './pages/ExpenseBreakdown';
 import Goals from './pages/Goals';
 import Income from './pages/Income';
-import Bills from './pages/Bills';
-import Reports from './pages/Reports';
+import BillsSubscriptions from './pages/BillsSubscriptions';
 import TaxPlanning from './pages/TaxPlanning';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 import NotFound from './pages/NotFound';
 import AssetsLiabilities from './pages/AssetsLiabilities';
+import CreditCardStrategy from './pages/CreditCardStrategy';
 
 // Auth Context
 import AuthProvider, { useAuth } from './contexts/AuthContext';
@@ -124,17 +122,6 @@ const AppRoutes = () => {
       />
       
       <Route 
-        path="/assets" 
-        element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Assets />
-            </ProtectedLayout>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
         path="/transactions" 
         element={
           <ProtectedRoute>
@@ -146,33 +133,22 @@ const AppRoutes = () => {
       />
       
       <Route 
-        path="/portfolio-analytics" 
+        path="/portfolio-breakdown" 
         element={
           <ProtectedRoute>
             <ProtectedLayout>
-              <PortfolioAnalytics />
+              <PortfolioBreakdown />
             </ProtectedLayout>
           </ProtectedRoute>
         } 
       />
       
       <Route 
-        path="/expense-analytics" 
+        path="/expense-breakdown" 
         element={
           <ProtectedRoute>
             <ProtectedLayout>
-              <ExpenseAnalytics />
-            </ProtectedLayout>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/budget" 
-        element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Budget />
+              <ExpenseBreakdown />
             </ProtectedLayout>
           </ProtectedRoute>
         } 
@@ -201,22 +177,11 @@ const AppRoutes = () => {
       />
       
       <Route 
-        path="/bills" 
+        path="/bills-subscriptions" 
         element={
           <ProtectedRoute>
             <ProtectedLayout>
-              <Bills />
-            </ProtectedLayout>
-          </ProtectedRoute>
-        } 
-      />
-      
-      <Route 
-        path="/reports" 
-        element={
-          <ProtectedRoute>
-            <ProtectedLayout>
-              <Reports />
+              <BillsSubscriptions />
             </ProtectedLayout>
           </ProtectedRoute>
         } 
@@ -239,6 +204,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <ProtectedLayout>
               <AssetsLiabilities />
+            </ProtectedLayout>
+          </ProtectedRoute>
+        } 
+      />
+
+     <Route 
+        path="/credit-card-strategy" 
+        element={
+          <ProtectedRoute>
+            <ProtectedLayout>
+              <CreditCardStrategy />
             </ProtectedLayout>
           </ProtectedRoute>
         } 
