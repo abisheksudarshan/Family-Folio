@@ -6,7 +6,7 @@ import {
   FormControl, InputLabel, Select, MenuItem, IconButton, InputAdornment,
   List, ListItem, ListItemText, ListItemSecondaryAction, Chip, Tooltip,
   Avatar, alpha, useTheme, Badge, ToggleButtonGroup, ToggleButton, AvatarGroup,
-  Tab, Tabs, Switch, FormControlLabel, FormHelperText, FormGroup, Alert,Checkbox
+  Tab, Tabs, Switch, FormControlLabel, FormHelperText, FormGroup, Alert, Checkbox
 } from '@mui/material';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as ChartTooltip, 
@@ -702,7 +702,7 @@ const TaxPlanning = () => {
   // COMPONENT FUNCTIONS - Break UI into logical sections
   // ============================================================
 
-  // 1. Summary Header Component with Chart
+  // 1. Summary Header Component 
   const renderSummaryHeader = () => (
     <Paper elevation={0} sx={styles.headerCard}>
       <Box sx={styles.headerDecoration} />
@@ -842,89 +842,64 @@ const TaxPlanning = () => {
         
         {comparing && (
           <Grid item xs={12}>
-            <Box sx={styles.chartContainer}>
+            <Box sx={{ mt: 3, height: 220 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[{
-                    name: 'Tax Comparison',
-                    old: taxData.oldRegimeTax,
-                    new: taxData.newRegimeTax,
+                    name: 'Old Regime',
+                    value: taxData.oldRegimeTax,
+                    fill: '#8884d8'
+                  }, {
+                    name: 'New Regime',
+                    value: taxData.newRegimeTax,
+                    fill: '#82ca9d'
                   }]}
-                  margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="name" tick={{ fill: 'rgba(255,255,255,0.7)' }} />
-                  <YAxis 
-                    tick={{ fill: 'rgba(255,255,255,0.7)' }}
-                    tickFormatter={(value) => {
-                      if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
-                      if (value >= 1000) return `₹${(value / 1000).toFixed(0)}K`;
-                      return `₹${value}`;
-                    }}
-                  />
-                  <ChartTooltip formatter={(value) => formatCurrency(value)} />
-                  <Legend wrapperStyle={{ color: 'white' }} />
-                  <Bar dataKey="old" name="Old Regime" fill="#8884d8" />
-                  <Bar dataKey="new" name="New Regime" fill="#82ca9d" />
-                </BarChart>
-              </ResponsiveContainer>
-            </Box>
-          </Grid>
-        )}
-        
-        {!comparing && (
-          <Grid item xs={12}>
-            <Box sx={styles.chartContainer}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={getMemberTaxHistory()}
-                  margin={{ top: 5, right: 10, left: 10, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="oldRegimeGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="newRegimeGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
+                  <CartesianGrid stroke="rgba(255, 255, 255, 0.1)" strokeDasharray="3 3" />
                   <XAxis 
-                    dataKey="year" 
-                    tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 12 }}
-                    axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-                    tickLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+                    dataKey="name" 
+                    tick={{ fill: 'rgba(255, 255, 255, 0.8)' }}
+                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
                   />
                   <YAxis 
-                    tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 12 }}
+                    tick={{ fill: 'rgba(255, 255, 255, 0.8)' }}
+                    axisLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
+                    tickLine={{ stroke: 'rgba(255, 255, 255, 0.2)' }}
                     tickFormatter={(value) => {
                       if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
                       if (value >= 1000) return `₹${(value / 1000).toFixed(0)}K`;
                       return `₹${value}`;
                     }}
-                    axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
-                    tickLine={{ stroke: 'rgba(255,255,255,0.2)' }}
                   />
-                  <ChartTooltip formatter={(value) => formatCurrency(value)} />
-                  <Legend wrapperStyle={{ color: 'white' }} />
-                  <Area 
-                    type="monotone" 
-                    dataKey="oldRegime" 
-                    name="Old Regime"
-                    stroke="#8884d8" 
-                    fillOpacity={1}
-                    fill="url(#oldRegimeGradient)" 
+                  <ChartTooltip 
+                    formatter={(value) => formatCurrency(value)}
+                    contentStyle={{ 
+                      background: 'rgba(255, 255, 255, 0.9)',
+                      border: 'none', 
+                      borderRadius: '8px',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+                      padding: '10px 14px'
+                    }}
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="newRegime" 
-                    name="New Regime"
-                    stroke="#82ca9d" 
-                    fillOpacity={1}
-                    fill="url(#newRegimeGradient)" 
-                  />
-                </AreaChart>
+                  <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+                    {[{
+                      name: 'Old Regime',
+                      value: taxData.oldRegimeTax,
+                      fill: '#8884d8'
+                    }, {
+                      name: 'New Regime',
+                      value: taxData.newRegimeTax,
+                      fill: '#82ca9d'
+                    }].map((entry, index) => (
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={entry.fill}
+                        stroke="none"
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
               </ResponsiveContainer>
             </Box>
           </Grid>
@@ -1675,7 +1650,12 @@ const TaxPlanning = () => {
                   <YAxis dataKey="range" type="category" scale="band" />
                   <ChartTooltip formatter={(value) => formatCurrency(value)} />
                   <Legend />
-                  <Bar dataKey="amount" name="Tax Amount" fill={theme.palette.primary.main} />
+                  <Bar 
+                    dataKey="amount" 
+                    name="Tax Amount" 
+                    fill={theme.palette.primary.main}
+                    radius={[0, 4, 4, 0]} 
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </Box>
@@ -2162,7 +2142,7 @@ const TaxPlanning = () => {
   // ============================================================
   return (
     <Box sx={styles.pageContainer}>
-      {/* Summary Header with Chart */}
+      {/* Summary Header */}
       {renderSummaryHeader()}
 
       {/* Tabs */}

@@ -1,809 +1,1592 @@
 // src/pages/Settings.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Typography,
-  Paper,
-  Grid,
-  Tabs,
-  Tab,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  ListItemSecondaryAction,
-  Switch,
-  Button,
-  TextField,
-  Divider,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  Select,
-  MenuItem,
-  IconButton,
-  Alert,
-  Snackbar,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  useTheme
+  Box, Typography, Paper, Grid, Card, CardContent, CardHeader, Divider,
+  Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField,
+  FormControl, InputLabel, Select, MenuItem, IconButton, InputAdornment,
+  List, ListItem, ListItemText, ListItemSecondaryAction, Chip, Tooltip,
+  Avatar, alpha, useTheme, Badge, ToggleButtonGroup, ToggleButton, AvatarGroup,
+  Tab, Tabs, Switch, FormControlLabel, FormHelperText, FormGroup, Alert, CircularProgress,
+  RadioGroup, Radio, Collapse,Checkbox
 } from '@mui/material';
-import {
-  Palette as PaletteIcon,
-  Notifications as NotificationsIcon,
-  Security as SecurityIcon,
-  AccountBalance as AccountBalanceIcon,
-  Language as LanguageIcon,
-  Payments as PaymentsIcon,
-  CurrencyExchange as CurrencyExchangeIcon,
-  CalendarToday as CalendarIcon,
-  Category as CategoryIcon,
-  Settings as SettingsIcon,
-  DeleteForever as DeleteForeverIcon,
-  Download as DownloadIcon,
+import { 
+  Save as SaveIcon,
   Add as AddIcon,
   Edit as EditIcon,
-  Delete as DeleteIcon
+  Delete as DeleteIcon,
+  SupervisorAccount as SupervisorAccountIcon,
+  Person as PersonIcon,
+  PersonAdd as PersonAddIcon,
+  Notifications as NotificationsIcon,
+  Security as SecurityIcon,
+  Language as LanguageIcon,
+  Palette as PaletteIcon,
+  Storage as StorageIcon,
+  CheckCircle as CheckCircleIcon,
+  CloudUpload as CloudUploadIcon,
+  CloudDownload as CloudDownloadIcon,
+  Info as InfoIcon,
+  Key as KeyIcon,
+  Lock as LockIcon,
+  Visibility as VisibilityIcon,
+  VisibilityOff as VisibilityOffIcon,
+  ArrowForward as ArrowForwardIcon,
+  DarkMode as DarkModeIcon,
+  LightMode as LightModeIcon,
+  CurrencyRupee as CurrencyRupeeIcon,
+  CurrencyExchange as CurrencyExchangeIcon,
+  Cake as CakeIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Logout as LogoutIcon
 } from '@mui/icons-material';
 
 const Settings = () => {
   const theme = useTheme();
   
-  // State for active tab
-  const [activeTab, setActiveTab] = useState(0);
+  // ============================================================
+  // COMMON STYLES - Reusable style objects
+  // ============================================================
+  const styles = {
+    // Container styles
+    pageContainer: { 
+      p: 3 
+    },
+    // Card styles
+    cardBase: {
+      p: 3, 
+      borderRadius: 3,
+      boxShadow: '0 0 20px rgba(0, 0, 0, 0.05)',
+    },
+    cardHover: {
+      transition: 'transform 0.3s ease',
+      '&:hover': {
+        transform: 'translateY(-5px)',
+        boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)'
+      }
+    },
+    headerCard: {
+      p: 3, 
+      mb: 3, 
+      borderRadius: 3,
+      background: `linear-gradient(120deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+      color: 'white',
+      position: 'relative',
+      overflow: 'hidden',
+      boxShadow: '0 0 20px rgba(0, 0, 0, 0.05)'
+    },
+    // Avatar styles
+    avatarStyle: (color) => ({
+      bgcolor: alpha(color, 0.1),
+      color: color,
+      mr: 2
+    }),
+    // Background decoration styles
+    headerDecoration: { 
+      position: 'absolute', 
+      top: -50, 
+      right: -50, 
+      width: '40%', 
+      height: '200%', 
+      opacity: 0.1, 
+      background: `radial-gradient(circle, ${theme.palette.common.white} 0%, transparent 70%)` 
+    },
+    // List item styles
+    listItem: (color) => ({ 
+      borderRadius: 2,
+      mb: 1,
+      transition: 'all 0.2s ease',
+      '&:last-child': {
+        mb: 0
+      },
+      '&:hover': {
+        bgcolor: alpha(color, 0.05),
+        transform: 'translateX(5px)'
+      }
+    }),
+    // Section header
+    sectionHeader: (color) => ({ 
+      display: 'flex', 
+      justifyContent: 'space-between', 
+      alignItems: 'center',
+      p: 1.5,
+      borderRadius: 2,
+      bgcolor: alpha(color, 0.05),
+      mb: 3,
+      boxShadow: `0 2px 8px ${alpha(color, 0.1)}`
+    }),
+    // Settings tabs
+    settingsTabs: {
+      mb: 3,
+      borderRadius: 3,
+      bgcolor: alpha(theme.palette.background.paper, 0.7),
+      boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)',
+      '& .MuiTab-root': {
+        minHeight: '60px',
+        textTransform: 'none',
+      }
+    },
+    // Dialog styles
+    dialogPaper: { 
+      borderRadius: 3, 
+      boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)' 
+    },
+    // Section styles
+    section: {
+      mb: 4
+    },
+    // Settings item styles
+    settingsItem: {
+      p: 2,
+      borderRadius: 2,
+      bgcolor: alpha(theme.palette.background.paper, 0.5),
+      mb: 2,
+      border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+      '&:hover': {
+        bgcolor: alpha(theme.palette.background.paper, 0.8),
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.03)'
+      }
+    }
+  };
+
+  // ============================================================
+  // STATE DEFINITIONS - Grouped by feature
+  // ============================================================
+  // UI state
+  const [currentTab, setCurrentTab] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Family member management
+  const [familyMembers, setFamilyMembers] = useState([
+    { id: 'parent1', name: 'Raj', role: 'parent', avatar: '👨', color: '#1976d2', email: 'raj@example.com', phone: '+91 98765 43210', dob: '1980-05-15', isPrimary: true },
+    { id: 'parent2', name: 'Meera', role: 'parent', avatar: '👩', color: '#9c27b0', email: 'meera@example.com', phone: '+91 98765 43211', dob: '1982-07-23', isPrimary: false },
+    { id: 'child1', name: 'Arjun', role: 'child', avatar: '👦', color: '#2e7d32', email: 'arjun@example.com', phone: '+91 98765 43212', dob: '2010-03-12', isPrimary: false },
+    { id: 'child2', name: 'Anjali', role: 'child', avatar: '👧', color: '#d32f2f', email: 'anjali@example.com', phone: '+91 98765 43213', dob: '2012-11-05', isPrimary: false },
+    { id: 'senior', name: 'Dadaji', role: 'senior', avatar: '👴', color: '#795548', email: 'dadaji@example.com', phone: '+91 98765 43214', dob: '1950-01-30', isPrimary: false }
+  ]);
   
-  // State for settings
-  const [settings, setSettings] = useState({
-    // Appearance settings
+  // Member dialog state
+  const [memberDialogOpen, setMemberDialogOpen] = useState(false);
+  const [memberDialogMode, setMemberDialogMode] = useState('add'); // 'add' or 'edit'
+  const [currentMember, setCurrentMember] = useState({
+    id: null,
+    name: '',
+    role: 'parent',
+    avatar: '👤',
+    color: '#1976d2',
+    email: '',
+    phone: '',
+    dob: '',
+    isPrimary: false
+  });
+  
+  // Dialog state for delete confirmation
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState(null);
+  
+  // App settings state
+  const [appSettings, setAppSettings] = useState({
+    // Theme settings
     theme: 'light',
-    primaryColor: 'blue',
-    fontSize: 'medium',
-    compactView: false,
+    primaryColor: '#1976d2',
+    
+    // Currency & Number format
+    currency: 'INR',
+    locale: 'en-IN',
     
     // Notification settings
     emailNotifications: true,
     pushNotifications: false,
-    weeklyReports: true,
-    budgetAlerts: true,
-    billReminders: true,
-    
-    // Regional settings
-    language: 'en',
-    currency: 'USD',
-    dateFormat: 'MM/DD/YYYY',
-    startOfWeek: 'sunday',
+    reminderNotifications: true,
     
     // Security settings
     twoFactorAuth: false,
-    loginNotifications: true,
-    sessionTimeout: 30,
+    biometricLogin: true,
+    autoLockTimeout: 5,
     
-    // Integration settings
-    bankConnections: [
-      { id: 1, name: 'Chase Bank', connected: true, lastSync: '2025-03-15T14:30:00' },
-      { id: 2, name: 'Bank of America', connected: true, lastSync: '2025-03-20T10:15:00' },
-      { id: 3, name: 'Vanguard', connected: false, lastSync: null }
-    ]
+    // Privacy settings
+    hideBalances: false,
+    shareDataForAnalytics: true,
+    
+    // Data management
+    autoBackup: true,
+    backupFrequency: 'weekly'
   });
   
-  // State for snackbar
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success'
+  // User profile state
+  const [userProfile, setUserProfile] = useState({
+    name: 'Raj Kumar',
+    email: 'raj@example.com',
+    phone: '+91 98765 43210',
+    address: 'Apartment 502, Sunshine Towers, Mumbai 400001',
   });
   
-  // State for confirmation dialog
-  const [confirmDialog, setConfirmDialog] = useState({
-    open: false,
-    title: '',
-    message: '',
-    onConfirm: null
+  // Password update state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
   });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+
+  // ============================================================
+  // EVENT HANDLERS - All event handling functions
+  // ============================================================
   
-  // State for custom category management
-  const [categories, setCategories] = useState([
-    { id: 1, name: 'Groceries', type: 'expense', icon: 'ShoppingCart' },
-    { id: 2, name: 'Restaurants', type: 'expense', icon: 'Restaurant' },
-    { id: 3, name: 'Mortgage', type: 'expense', icon: 'Home' },
-    { id: 4, name: 'Utilities', type: 'expense', icon: 'ElectricBolt' },
-    { id: 5, name: 'Entertainment', type: 'expense', icon: 'TheaterComedy' },
-    { id: 6, name: 'Salary', type: 'income', icon: 'WorkOutline' },
-    { id: 7, name: 'Dividends', type: 'income', icon: 'TrendingUp' }
-  ]);
-  
-  // Handle tab change
+  // Tab change handler
   const handleTabChange = (event, newValue) => {
-    setActiveTab(newValue);
+    setCurrentTab(newValue);
   };
   
-  // Handle settings change
-  const handleSettingChange = (setting, value) => {
-    setSettings({
-      ...settings,
-      [setting]: value
+  // Toggle boolean settings
+  const handleToggleChange = (setting) => (event) => {
+    setAppSettings({
+      ...appSettings,
+      [setting]: event.target.checked
     });
+  };
+  
+  // Handle dropdown settings
+  const handleSelectChange = (setting) => (event) => {
+    setAppSettings({
+      ...appSettings,
+      [setting]: event.target.value
+    });
+  };
+  
+  // Handle text input settings
+  const handleInputChange = (setting, stateUpdater) => (event) => {
+    stateUpdater(prev => ({
+      ...prev,
+      [setting]: event.target.value
+    }));
+  };
+  
+  // Handle save settings
+  const handleSaveSettings = () => {
+    setIsSaving(true);
     
-    // Show success notification
-    setSnackbar({
-      open: true,
-      message: 'Setting updated successfully',
-      severity: 'success'
+    // Simulate API call
+    setTimeout(() => {
+      setIsSaving(false);
+      setSaveSuccess(true);
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setSaveSuccess(false);
+      }, 3000);
+    }, 1500);
+  };
+  
+  // Toggle password visibility
+  const handleTogglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  
+  // Handle password update input change
+  const handlePasswordChange = (field) => (event) => {
+    setPasswordData({
+      ...passwordData,
+      [field]: event.target.value
+    });
+    // Clear error when user starts typing
+    if (passwordError) {
+      setPasswordError('');
+    }
+  };
+  
+  // Handle password update
+  const handleUpdatePassword = () => {
+    // Reset states
+    setPasswordError('');
+    setPasswordSuccess(false);
+    
+    // Validation
+    if (!passwordData.currentPassword) {
+      setPasswordError('Current password is required');
+      return;
+    }
+    
+    if (!passwordData.newPassword) {
+      setPasswordError('New password is required');
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters long');
+      return;
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+    
+    // Simulate API call to update password
+    setIsSaving(true);
+    
+    setTimeout(() => {
+      setIsSaving(false);
+      setPasswordSuccess(true);
+      
+      // Reset password fields
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      });
+      
+      // Hide success message after 3 seconds
+      setTimeout(() => {
+        setPasswordSuccess(false);
+      }, 3000);
+    }, 1000);
+  };
+  
+  // Family member management functions
+  const handleAddMember = () => {
+    setMemberDialogMode('add');
+    setCurrentMember({
+      id: null,
+      name: '',
+      role: 'parent',
+      avatar: '👤',
+      color: '#1976d2',
+      email: '',
+      phone: '',
+      dob: '',
+      isPrimary: false
+    });
+    setMemberDialogOpen(true);
+  };
+  
+  const handleEditMember = (member) => {
+    setMemberDialogMode('edit');
+    setCurrentMember({ ...member });
+    setMemberDialogOpen(true);
+  };
+  
+  const handleDeleteMember = (member) => {
+    setMemberToDelete(member);
+    setDeleteDialogOpen(true);
+  };
+  
+  const confirmDeleteMember = () => {
+    if (memberToDelete) {
+      setFamilyMembers(familyMembers.filter(member => member.id !== memberToDelete.id));
+      setDeleteDialogOpen(false);
+      setMemberToDelete(null);
+    }
+  };
+  
+  const handleMemberDialogClose = () => {
+    setMemberDialogOpen(false);
+  };
+  
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+    setMemberToDelete(null);
+  };
+  
+  const handleMemberInputChange = (field) => (event) => {
+    setCurrentMember({
+      ...currentMember,
+      [field]: event.target.value
     });
   };
   
-  // Handle snackbar close
-  const handleSnackbarClose = () => {
-    setSnackbar({
-      ...snackbar,
-      open: false
+  const handleMemberCheckboxChange = (event) => {
+    setCurrentMember({
+      ...currentMember,
+      isPrimary: event.target.checked
     });
   };
   
-  // Handle confirmation dialog
-  const openConfirmDialog = (title, message, onConfirm) => {
-    setConfirmDialog({
-      open: true,
-      title,
-      message,
-      onConfirm
-    });
-  };
-  
-  // Handle dialog close
-  const handleDialogClose = () => {
-    setConfirmDialog({
-      ...confirmDialog,
-      open: false
-    });
-  };
-  
-  // Handle bank connection toggle
-  const toggleBankConnection = (id) => {
-    const updatedConnections = settings.bankConnections.map(connection => {
-      if (connection.id === id) {
-        return {
-          ...connection,
-          connected: !connection.connected,
-          lastSync: connection.connected ? null : new Date().toISOString()
-        };
+  const handleSaveMember = () => {
+    if (memberDialogMode === 'add') {
+      // Add new member
+      const newMember = {
+        ...currentMember,
+        id: `member${Date.now()}` // Generate a unique ID
+      };
+      
+      // If this is the primary member, update others
+      if (newMember.isPrimary) {
+        const updatedMembers = familyMembers.map(member => ({
+          ...member,
+          isPrimary: false
+        }));
+        setFamilyMembers([...updatedMembers, newMember]);
+      } else {
+        setFamilyMembers([...familyMembers, newMember]);
       }
-      return connection;
-    });
+    } else {
+      // Update existing member
+      const updatedMembers = familyMembers.map(member => {
+        if (member.id === currentMember.id) {
+          return currentMember;
+        }
+        
+        // If current member is set as primary, remove primary from others
+        if (currentMember.isPrimary && member.id !== currentMember.id) {
+          return {
+            ...member,
+            isPrimary: false
+          };
+        }
+        
+        return member;
+      });
+      
+      setFamilyMembers(updatedMembers);
+    }
     
-    setSettings({
-      ...settings,
-      bankConnections: updatedConnections
-    });
-    
-    // Show success notification
-    setSnackbar({
-      open: true,
-      message: 'Bank connection updated',
-      severity: 'success'
-    });
+    setMemberDialogOpen(false);
   };
-  
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return 'Never';
-    
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    }).format(date);
-  };
-  
-  return (
-    <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
+
+  // ============================================================
+  // COMPONENT FUNCTIONS - Break UI into logical sections
+  // ============================================================
+
+  // 1. Header Component
+  const renderHeader = () => (
+    <Paper elevation={0} sx={styles.headerCard}>
+      <Box sx={styles.headerDecoration} />
+      
+      <Box sx={{ mb: 2 }}>
+        <Typography variant="h4" fontWeight="bold" component="h1">
           Settings
+        </Typography>
+        <Typography variant="subtitle1" sx={{ opacity: 0.9, mt: 1 }}>
+          Manage your account settings, family members, and preferences
         </Typography>
       </Box>
       
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={3}>
-          <Paper sx={{ mb: { xs: 2, md: 0 } }}>
-            <Tabs
-              orientation="vertical"
-              variant="scrollable"
-              value={activeTab}
-              onChange={handleTabChange}
-              sx={{ borderRight: 1, borderColor: 'divider' }}
+      <Grid container spacing={2} alignItems="center">
+        <Grid item xs={12} md={6}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Avatar 
+              sx={{ 
+                width: 64, 
+                height: 64, 
+                bgcolor: alpha('#fff', 0.2),
+                color: 'white',
+                fontSize: 32,
+                mr: 2
+              }}
             >
-              <Tab icon={<PaletteIcon />} label="Appearance" />
-              <Tab icon={<NotificationsIcon />} label="Notifications" />
-              <Tab icon={<LanguageIcon />} label="Regional" />
-              <Tab icon={<SecurityIcon />} label="Security" />
-              <Tab icon={<AccountBalanceIcon />} label="Integrations" />
-              <Tab icon={<CategoryIcon />} label="Categories" />
-              <Tab icon={<SettingsIcon />} label="Advanced" />
-            </Tabs>
-          </Paper>
+              {userProfile.name.charAt(0)}
+            </Avatar>
+            <Box>
+              <Typography variant="h6" fontWeight="bold">
+                {userProfile.name}
+              </Typography>
+              <Typography variant="body2" sx={{ opacity: 0.8 }}>
+                {userProfile.email}
+              </Typography>
+            </Box>
+          </Box>
         </Grid>
         
-        <Grid item xs={12} md={9}>
-          <Paper sx={{ p: 3 }}>
-            {/* Appearance Settings */}
-            {activeTab === 0 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Appearance Settings</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Customize how Family Folio looks and behaves.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="theme-label">Theme</InputLabel>
-                      <Select
-                        labelId="theme-label"
-                        value={settings.theme}
-                        label="Theme"
-                        onChange={(e) => handleSettingChange('theme', e.target.value)}
-                      >
-                        <MenuItem value="light">Light Mode</MenuItem>
-                        <MenuItem value="dark">Dark Mode</MenuItem>
-                        <MenuItem value="system">System Default</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="primary-color-label">Primary Color</InputLabel>
-                      <Select
-                        labelId="primary-color-label"
-                        value={settings.primaryColor}
-                        label="Primary Color"
-                        onChange={(e) => handleSettingChange('primaryColor', e.target.value)}
-                      >
-                        <MenuItem value="blue">Blue</MenuItem>
-                        <MenuItem value="purple">Purple</MenuItem>
-                        <MenuItem value="green">Green</MenuItem>
-                        <MenuItem value="teal">Teal</MenuItem>
-                        <MenuItem value="orange">Orange</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="font-size-label">Font Size</InputLabel>
-                      <Select
-                        labelId="font-size-label"
-                        value={settings.fontSize}
-                        label="Font Size"
-                        onChange={(e) => handleSettingChange('fontSize', e.target.value)}
-                      >
-                        <MenuItem value="small">Small</MenuItem>
-                        <MenuItem value="medium">Medium</MenuItem>
-                        <MenuItem value="large">Large</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          checked={settings.compactView}
-                          onChange={(e) => handleSettingChange('compactView', e.target.checked)}
-                        />
-                      }
-                      label="Use compact view (show more content with less spacing)"
-                    />
-                  </Grid>
-                </Grid>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Button variant="contained">Save Appearance Settings</Button>
-                  <Button sx={{ ml: 2 }} variant="outlined">Reset to Defaults</Button>
-                </Box>
-              </Box>
-            )}
-            
-            {/* Notification Settings */}
-            {activeTab === 1 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Notification Settings</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Manage how and when you receive notifications and alerts.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <List>
-                  <ListItem>
-                    <ListItemIcon>
-                      <NotificationsIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Email Notifications" 
-                      secondary="Receive important updates and reports via email"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.emailNotifications}
-                        onChange={(e) => handleSettingChange('emailNotifications', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  
-                  <ListItem>
-                    <ListItemIcon>
-                      <NotificationsIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Push Notifications" 
-                      secondary="Receive alerts in your browser"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.pushNotifications}
-                        onChange={(e) => handleSettingChange('pushNotifications', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  
-                  <ListItem>
-                    <ListItemIcon>
-                      <CalendarIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Weekly Financial Reports" 
-                      secondary="Get a summary of your finances every week"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.weeklyReports}
-                        onChange={(e) => handleSettingChange('weeklyReports', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  
-                  <ListItem>
-                    <ListItemIcon>
-                      <PaymentsIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Budget Alerts" 
-                      secondary="Get notified when you approach or exceed budget limits"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.budgetAlerts}
-                        onChange={(e) => handleSettingChange('budgetAlerts', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  
-                  <ListItem>
-                    <ListItemIcon>
-                      <CalendarIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Bill & Subscription Reminders" 
-                      secondary="Get reminders before bills and subscriptions are due"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.billReminders}
-                        onChange={(e) => handleSettingChange('billReminders', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Button variant="contained">Save Notification Settings</Button>
-                </Box>
-              </Box>
-            )}
-            
-            {/* Regional Settings */}
-            {activeTab === 2 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Regional Settings</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Configure language, currency, and date formats.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="language-label">Language</InputLabel>
-                      <Select
-                        labelId="language-label"
-                        value={settings.language}
-                        label="Language"
-                        onChange={(e) => handleSettingChange('language', e.target.value)}
-                      >
-                        <MenuItem value="en">English</MenuItem>
-                        <MenuItem value="es">Spanish</MenuItem>
-                        <MenuItem value="fr">French</MenuItem>
-                        <MenuItem value="de">German</MenuItem>
-                        <MenuItem value="zh">Chinese</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="currency-label">Currency</InputLabel>
-                      <Select
-                        labelId="currency-label"
-                        value={settings.currency}
-                        label="Currency"
-                        onChange={(e) => handleSettingChange('currency', e.target.value)}
-                      >
-                        <MenuItem value="USD">US Dollar ($)</MenuItem>
-                        <MenuItem value="EUR">Euro (€)</MenuItem>
-                        <MenuItem value="GBP">British Pound (£)</MenuItem>
-                        <MenuItem value="JPY">Japanese Yen (¥)</MenuItem>
-                        <MenuItem value="CAD">Canadian Dollar (C$)</MenuItem>
-                        <MenuItem value="AUD">Australian Dollar (A$)</MenuItem>
-                        <MenuItem value="INR">Indian Rupee (₹)</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="date-format-label">Date Format</InputLabel>
-                      <Select
-                        labelId="date-format-label"
-                        value={settings.dateFormat}
-                        label="Date Format"
-                        onChange={(e) => handleSettingChange('dateFormat', e.target.value)}
-                      >
-                        <MenuItem value="MM/DD/YYYY">MM/DD/YYYY (US)</MenuItem>
-                        <MenuItem value="DD/MM/YYYY">DD/MM/YYYY (Europe)</MenuItem>
-                        <MenuItem value="YYYY-MM-DD">YYYY-MM-DD (ISO)</MenuItem>
-                        <MenuItem value="MMM DD, YYYY">MMM DD, YYYY (Jan 01, 2025)</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6}>
-                    <FormControl fullWidth>
-                      <InputLabel id="week-start-label">Start of Week</InputLabel>
-                      <Select
-                        labelId="week-start-label"
-                        value={settings.startOfWeek}
-                        label="Start of Week"
-                        onChange={(e) => handleSettingChange('startOfWeek', e.target.value)}
-                      >
-                        <MenuItem value="sunday">Sunday</MenuItem>
-                        <MenuItem value="monday">Monday</MenuItem>
-                        <MenuItem value="saturday">Saturday</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                </Grid>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Button variant="contained">Save Regional Settings</Button>
-                </Box>
-              </Box>
-            )}
-            
-            {/* Security Settings */}
-            {activeTab === 3 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Security Settings</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Manage security options and privacy preferences.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <List>
-                  <ListItem>
-                    <ListItemIcon>
-                      <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Two-Factor Authentication" 
-                      secondary="Add an extra layer of security to your account"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.twoFactorAuth}
-                        onChange={(e) => handleSettingChange('twoFactorAuth', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  
-                  <ListItem>
-                    <ListItemIcon>
-                      <SecurityIcon />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary="Login Notifications" 
-                      secondary="Get notified when someone logs into your account"
-                    />
-                    <ListItemSecondaryAction>
-                      <Switch
-                        edge="end"
-                        checked={settings.loginNotifications}
-                        onChange={(e) => handleSettingChange('loginNotifications', e.target.checked)}
-                      />
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                </List>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
-                      <FormControl fullWidth>
-                        <InputLabel id="session-timeout-label">Session Timeout</InputLabel>
-                        <Select
-                          labelId="session-timeout-label"
-                          value={settings.sessionTimeout}
-                          label="Session Timeout"
-                          onChange={(e) => handleSettingChange('sessionTimeout', e.target.value)}
-                        >
-                          <MenuItem value={15}>15 minutes</MenuItem>
-                          <MenuItem value={30}>30 minutes</MenuItem>
-                          <MenuItem value={60}>1 hour</MenuItem>
-                          <MenuItem value={120}>2 hours</MenuItem>
-                          <MenuItem value={240}>4 hours</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
-                </Box>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Button variant="contained">Change Password</Button>
-                  <Button 
-                    sx={{ ml: 2 }} 
-                    variant="outlined" 
-                    color="error"
-                    onClick={() => openConfirmDialog(
-                      'Delete Account',
-                      'Are you sure you want to delete your account? This action cannot be undone.',
-                      () => console.log('Account deletion confirmed')
-                    )}
-                  >
-                    Delete Account
-                  </Button>
-                </Box>
-              </Box>
-            )}
-            
-            {/* Integrations Settings */}
-            {activeTab === 4 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Integrations & Connections</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Connect your financial accounts and manage external integrations.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <Box sx={{ mb: 3 }}>
-                  <Button variant="contained" startIcon={<AddIcon />}>
-                    Connect New Account
-                  </Button>
-                </Box>
-                
-                <List>
-                  {settings.bankConnections.map((connection) => (
-                    <ListItem key={connection.id}>
-                      <ListItemIcon>
-                        <AccountBalanceIcon />
-                      </ListItemIcon>
-                      <ListItemText 
-                        primary={connection.name} 
-                        secondary={connection.connected 
-                          ? `Last synced: ${formatDate(connection.lastSync)}`
-                          : 'Not connected'
-                        }
-                      />
-                      <ListItemSecondaryAction>
-                        <Button 
-                          variant={connection.connected ? "outlined" : "contained"}
-                          size="small"
-                          onClick={() => toggleBankConnection(connection.id)}
-                          sx={{ mr: 1 }}
-                        >
-                          {connection.connected ? 'Disconnect' : 'Connect'}
-                        </Button>
-                        {connection.connected && (
-                          <Button 
-                            variant="outlined" 
-                            size="small"
-                          >
-                            Sync Now
-                          </Button>
-                        )}
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-                
-                <Divider sx={{ my: 3 }} />
-                
-                <Typography variant="h6" gutterBottom>API Access</Typography>
-                <Typography variant="body2" paragraph>
-                  Manage API keys and authorized applications.
-                </Typography>
-                
-                <Button variant="outlined">
-                  Generate API Key
-                </Button>
-              </Box>
-            )}
-            
-            {/* Categories Settings */}
-            {activeTab === 5 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Custom Categories</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Customize transaction categories to better organize your finances.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <Box sx={{ mb: 3 }}>
-                  <Button variant="contained" startIcon={<AddIcon />}>
-                    Add New Category
-                  </Button>
-                </Box>
-                
-                <List>
-                  {categories.map((category) => (
-                    <ListItem key={category.id}>
-                      <ListItemIcon>
-                        <CategoryIcon />
-                      </ListItemIcon>
-                      <ListItemText 
-                        primary={category.name} 
-                        secondary={`Type: ${category.type.charAt(0).toUpperCase() + category.type.slice(1)}`}
-                      />
-                      <ListItemSecondaryAction>
-                        <IconButton edge="end" aria-label="edit" sx={{ mr: 1 }}>
-                          <EditIcon />
-                        </IconButton>
-                        <IconButton 
-                          edge="end" 
-                          aria-label="delete"
-                          onClick={() => openConfirmDialog(
-                            'Delete Category',
-                            `Are you sure you want to delete the "${category.name}" category?`,
-                            () => console.log(`Delete category ${category.id}`)
-                          )}
-                        >
-                          <DeleteIcon />
-                        </IconButton>
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  ))}
-                </List>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Button variant="outlined" startIcon={<DownloadIcon />}>
-                    Export Categories
-                  </Button>
-                </Box>
-              </Box>
-            )}
-            
-            {/* Advanced Settings */}
-            {activeTab === 6 && (
-              <Box>
-                <Typography variant="h6" gutterBottom>Advanced Settings</Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Configure advanced options and manage your data.
-                </Typography>
-                <Divider sx={{ mb: 3 }} />
-                
-                <Typography variant="subtitle1" gutterBottom>Data Management</Typography>
-                
-                <Grid container spacing={2} sx={{ mb: 3 }}>
-                  <Grid item>
-                    <Button variant="outlined" startIcon={<DownloadIcon />}>
-                      Export All Data
-                    </Button>
-                  </Grid>
-                  <Grid item>
-                    <Button 
-                      variant="outlined" 
-                      color="error" 
-                      startIcon={<DeleteForeverIcon />}
-                      onClick={() => openConfirmDialog(
-                        'Clear All Data',
-                        'Are you sure you want to delete all your financial data? This action cannot be undone.',
-                        () => console.log('Clear all data confirmed')
-                      )}
-                    >
-                      Clear All Data
-                    </Button>
-                  </Grid>
-                </Grid>
-                
-                <Typography variant="subtitle1" gutterBottom>Developer Options</Typography>
-                
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="Enable beta features"
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <FormControlLabel
-                      control={<Switch />}
-                      label="Show developer tools"
-                    />
-                  </Grid>
-                </Grid>
-                
-                <Box sx={{ mt: 3 }}>
-                  <Button variant="outlined">
-                    View Application Logs
-                  </Button>
-                </Box>
-              </Box>
-            )}
-          </Paper>
+        <Grid item xs={12} md={6} sx={{ textAlign: { xs: 'left', md: 'right' } }}>
+          <Button 
+            variant="contained" 
+            color="inherit"
+            startIcon={<SaveIcon />}
+            onClick={handleSaveSettings}
+            disabled={isSaving}
+            sx={{ 
+              bgcolor: 'rgba(255, 255, 255, 0.9)', 
+              color: theme.palette.primary.main,
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 1)'
+              },
+              mr: 2
+            }}
+          >
+            {isSaving ? 'Saving...' : 'Save Changes'}
+          </Button>
+          
+          <Button 
+            variant="outlined" 
+            color="inherit"
+            startIcon={<LogoutIcon />}
+            sx={{ 
+              borderColor: 'rgba(255, 255, 255, 0.3)', 
+              color: 'white',
+              '&:hover': {
+                borderColor: 'rgba(255, 255, 255, 0.6)',
+                bgcolor: 'rgba(255, 255, 255, 0.1)'
+              }
+            }}
+          >
+            Logout
+          </Button>
         </Grid>
       </Grid>
       
-      {/* Confirmation Dialog */}
-      <Dialog
-        open={confirmDialog.open}
-        onClose={handleDialogClose}
-      >
-        <DialogTitle>{confirmDialog.title}</DialogTitle>
-        <DialogContent>
-          <Typography>{confirmDialog.message}</Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button 
-            onClick={() => {
-              if (confirmDialog.onConfirm) {
-                confirmDialog.onConfirm();
-              }
-              handleDialogClose();
-            }} 
-            color="error"
-            autoFocus
-          >
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
-      
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={4000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-      >
+      {saveSuccess && (
         <Alert 
-          onClose={handleSnackbarClose} 
-          severity={snackbar.severity}
-          variant="filled"
+          severity="success" 
+          sx={{ 
+            mt: 2,
+            bgcolor: 'rgba(76, 175, 80, 0.2)',
+            color: 'white',
+            '& .MuiAlert-icon': {
+              color: 'white'
+            }
+          }}
         >
-          {snackbar.message}
+          Your settings have been saved successfully!
         </Alert>
-      </Snackbar>
+      )}
+    </Paper>
+  );
+
+  // 2. Settings Tabs
+  const renderSettingsTabs = () => (
+    <Tabs
+      value={currentTab}
+      onChange={handleTabChange}
+      variant="fullWidth"
+      sx={styles.settingsTabs}
+    >
+      <Tab 
+        icon={<PersonIcon />} 
+        label="Profile" 
+        iconPosition="start"
+      />
+      <Tab 
+        icon={<SupervisorAccountIcon />} 
+        label="Family Members" 
+        iconPosition="start"
+      />
+      <Tab 
+        icon={<PaletteIcon />} 
+        label="Appearance" 
+        iconPosition="start"
+      />
+      <Tab 
+        icon={<SecurityIcon />} 
+        label="Security & Privacy" 
+        iconPosition="start"
+      />
+    </Tabs>
+  );
+
+  // 3. Profile Settings Tab
+  const renderProfileTab = () => (
+    <Paper 
+      elevation={0}
+      sx={{ 
+        ...styles.cardBase,
+        ...styles.cardHover,
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar sx={styles.avatarStyle(theme.palette.primary.main)}>
+            <PersonIcon />
+          </Avatar>
+          <Typography variant="h6" fontWeight="bold">
+            Profile Settings
+          </Typography>
+        </Box>
+      </Box>
+      
+      {/* Personal Information */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.primary.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Personal Information
+          </Typography>
+        </Box>
+        
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Full Name"
+              fullWidth
+              value={userProfile.name}
+              onChange={handleInputChange('name', setUserProfile)}
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PersonIcon color="primary" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Email Address"
+              fullWidth
+              type="email"
+              value={userProfile.email}
+              onChange={handleInputChange('email', setUserProfile)}
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <EmailIcon color="primary" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Phone Number"
+              fullWidth
+              value={userProfile.phone}
+              onChange={handleInputChange('phone', setUserProfile)}
+              variant="outlined"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <PhoneIcon color="primary" />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          
+          <Grid item xs={12}>
+            <Box sx={styles.section}>
+              <Box sx={styles.sectionHeader(theme.palette.primary.main)}>
+                <Typography variant="subtitle1" fontWeight="medium">
+                  Update Password
+                </Typography>
+              </Box>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Current Password"
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    value={passwordData.currentPassword}
+                    onChange={handlePasswordChange('currentPassword')}
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <KeyIcon color="primary" />
+                        </InputAdornment>
+                      ),
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton onClick={handleTogglePasswordVisibility}>
+                            {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="New Password"
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange('newPassword')}
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon color="primary" />
+                        </InputAdornment>
+                      ),
+                    }}
+                    helperText="At least 8 characters"
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="Confirm New Password"
+                    fullWidth
+                    type={showPassword ? "text" : "password"}
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange('confirmPassword')}
+                    variant="outlined"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LockIcon color="primary" />
+                        </InputAdornment>
+                      ),
+                    }}
+                  />
+                </Grid>
+                
+                <Grid item xs={12} sm={6} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUpdatePassword}
+                    disabled={isSaving}
+                    startIcon={isSaving ? <CircularProgress size={20} /> : null}
+                  >
+                    {isSaving ? 'Updating...' : 'Update Password'}
+                  </Button>
+                </Grid>
+                
+                <Grid item xs={12}>
+                  {passwordError && (
+                    <Alert severity="error" sx={{ mt: 1 }}>
+                      {passwordError}
+                    </Alert>
+                  )}
+                  
+                  {passwordSuccess && (
+                    <Alert severity="success" sx={{ mt: 1 }}>
+                      Password updated successfully!
+                    </Alert>
+                  )}
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+          
+          <Grid item xs={12}>
+            <TextField
+              label="Address"
+              fullWidth
+              multiline
+              rows={2}
+              value={userProfile.address}
+              onChange={handleInputChange('address', setUserProfile)}
+              variant="outlined"
+            />
+          </Grid>
+        </Grid>
+      </Box>
+      
+      {/* Notification Preferences */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.primary.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Notification Preferences
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.emailNotifications} 
+                onChange={handleToggleChange('emailNotifications')}
+                color="primary"
+              />
+            }
+            label="Email Notifications"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Receive important updates and reminders via email
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.pushNotifications} 
+                onChange={handleToggleChange('pushNotifications')}
+                color="primary"
+              />
+            }
+            label="Push Notifications"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Receive alerts and reminders on your device
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.reminderNotifications} 
+                onChange={handleToggleChange('reminderNotifications')}
+                color="primary"
+              />
+            }
+            label="Reminders"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Get reminded about upcoming bills and financial events
+          </Typography>
+        </Box>
+      </Box>
+    </Paper>
+  );
+  
+  // 4. Family Members Tab
+  const renderFamilyMembersTab = () => (
+    <Paper 
+      elevation={0}
+      sx={{ 
+        ...styles.cardBase,
+        ...styles.cardHover,
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar sx={styles.avatarStyle(theme.palette.secondary.main)}>
+            <SupervisorAccountIcon />
+          </Avatar>
+          <Typography variant="h6" fontWeight="bold">
+            Family Members
+          </Typography>
+        </Box>
+        <Button 
+          variant="contained" 
+          color="secondary" 
+          startIcon={<PersonAddIcon />}
+          onClick={handleAddMember}
+          size="small"
+          sx={{ textTransform: 'none' }}
+        >
+          Add Member
+        </Button>
+      </Box>
+      
+      {/* Family Members List */}
+      <List sx={{ 
+        bgcolor: alpha(theme.palette.background.paper, 0.5),
+        borderRadius: 2,
+        p: 0
+      }}>
+        {familyMembers.map((member) => (
+          <ListItem 
+            key={member.id}
+            sx={{
+              ...styles.listItem(theme.palette.secondary.main),
+              p: 2
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+              <Avatar 
+                sx={{ 
+                  bgcolor: alpha(member.color, 0.1),
+                  color: member.color,
+                  mr: 2,
+                  fontSize: 24
+                }}
+              >
+                {member.avatar}
+              </Avatar>
+              
+              <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Typography variant="body1" fontWeight="medium">
+                    {member.name}
+                  </Typography>
+                  {member.isPrimary && (
+                    <Chip 
+                      size="small" 
+                      label="Primary" 
+                      color="primary"
+                      sx={{ ml: 1, height: 20, fontSize: '0.7rem' }}
+                    />
+                  )}
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                  <Chip 
+                    size="small" 
+                    label={member.role.charAt(0).toUpperCase() + member.role.slice(1)} 
+                    sx={{ 
+                      mr: 1, 
+                      bgcolor: alpha(member.color, 0.1),
+                      color: member.color,
+                      fontWeight: 'medium',
+                      height: 20,
+                      fontSize: '0.7rem'
+                    }} 
+                  />
+                  <Typography variant="caption" color="text.secondary">
+                    {member.email}
+                  </Typography>
+                </Box>
+              </Box>
+              
+              <Box>
+                <IconButton 
+                  size="small"
+                  onClick={() => handleEditMember(member)}
+                  sx={{ 
+                    mr: 1,
+                    color: theme.palette.primary.main,
+                    bgcolor: alpha(theme.palette.primary.main, 0.1),
+                  }}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+                
+                <IconButton 
+                  size="small"
+                  onClick={() => handleDeleteMember(member)}
+                  disabled={member.isPrimary}
+                  sx={{ 
+                    color: theme.palette.error.main,
+                    bgcolor: alpha(theme.palette.error.main, 0.1),
+                    opacity: member.isPrimary ? 0.5 : 1,
+                  }}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </Box>
+          </ListItem>
+        ))}
+        
+        {familyMembers.length === 0 && (
+          <Box sx={{ p: 4, textAlign: 'center' }}>
+            <Typography color="text.secondary">
+              No family members added yet. Click "Add Member" to get started.
+            </Typography>
+          </Box>
+        )}
+      </List>
+      
+      <Box sx={{ mt: 3, p: 2, borderRadius: 2, bgcolor: alpha(theme.palette.info.light, 0.1) }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
+          <InfoIcon color="info" sx={{ mr: 1, mt: 0.5 }} />
+          <Box>
+            <Typography variant="subtitle2" color="info.main" gutterBottom>
+              About Family Members
+            </Typography>
+            <Typography variant="body2">
+              Family members can be assigned to different assets, liabilities, and expenses for better tracking. The primary member is the main account holder.
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Paper>
+  );
+  
+  // 5. Appearance Settings Tab
+  const renderAppearanceTab = () => (
+    <Paper 
+      elevation={0}
+      sx={{ 
+        ...styles.cardBase,
+        ...styles.cardHover,
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar sx={styles.avatarStyle(theme.palette.info.main)}>
+            <PaletteIcon />
+          </Avatar>
+          <Typography variant="h6" fontWeight="bold">
+            Appearance Settings
+          </Typography>
+        </Box>
+      </Box>
+      
+      {/* Theme Settings */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.info.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Theme Settings
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <Typography variant="subtitle2" gutterBottom>
+            Theme Mode
+          </Typography>
+          
+          <RadioGroup
+            row
+            value={appSettings.theme}
+            onChange={handleSelectChange('theme')}
+          >
+            <FormControlLabel 
+              value="light" 
+              control={<Radio />} 
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <LightModeIcon sx={{ mr: 1 }} />
+                  Light Mode
+                </Box>
+              } 
+            />
+            <FormControlLabel 
+              value="dark" 
+              control={<Radio />} 
+              label={
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <DarkModeIcon sx={{ mr: 1 }} />
+                  Dark Mode
+                </Box>
+              } 
+            />
+            <FormControlLabel 
+              value="system" 
+              control={<Radio />} 
+              label="System Default" 
+            />
+          </RadioGroup>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <Typography variant="subtitle2" gutterBottom>
+            Primary Color
+          </Typography>
+          
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {['#1976d2', '#9c27b0', '#2e7d32', '#d32f2f', '#ed6c02', '#0288d1', '#9e9e9e'].map((color) => (
+              <Box
+                key={color}
+                onClick={() => setAppSettings({...appSettings, primaryColor: color})}
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  bgcolor: color,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: appSettings.primaryColor === color ? '2px solid white' : 'none',
+                  boxShadow: appSettings.primaryColor === color ? '0 0 0 2px rgba(0,0,0,0.2)' : 'none',
+                }}
+              >
+                {appSettings.primaryColor === color && <CheckCircleIcon sx={{ color: 'white' }} />}
+              </Box>
+            ))}
+          </Box>
+        </Box>
+      </Box>
+      
+      {/* Currency & Number Format */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.info.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Currency & Number Format
+          </Typography>
+        </Box>
+        
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Currency</InputLabel>
+              <Select
+                value={appSettings.currency}
+                onChange={handleSelectChange('currency')}
+                label="Currency"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <CurrencyExchangeIcon color="primary" />
+                  </InputAdornment>
+                }
+              >
+                <MenuItem value="INR">Indian Rupee (₹)</MenuItem>
+                <MenuItem value="USD">US Dollar ($)</MenuItem>
+                <MenuItem value="EUR">Euro (€)</MenuItem>
+                <MenuItem value="GBP">British Pound (£)</MenuItem>
+                <MenuItem value="JPY">Japanese Yen (¥)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth variant="outlined">
+              <InputLabel>Region Format</InputLabel>
+              <Select
+                value={appSettings.locale}
+                onChange={handleSelectChange('locale')}
+                label="Region Format"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <LanguageIcon color="primary" />
+                  </InputAdornment>
+                }
+              >
+                <MenuItem value="en-IN">India (en-IN)</MenuItem>
+                <MenuItem value="en-US">United States (en-US)</MenuItem>
+                <MenuItem value="en-GB">United Kingdom (en-GB)</MenuItem>
+                <MenuItem value="ja-JP">Japan (ja-JP)</MenuItem>
+                <MenuItem value="de-DE">Germany (de-DE)</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+      </Box>
+      
+      {/* Preview */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.info.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Preview
+          </Typography>
+        </Box>
+        
+        <Box sx={{
+          p: 3,
+          borderRadius: 2,
+          bgcolor: appSettings.theme === 'dark' ? '#121212' : '#ffffff',
+          color: appSettings.theme === 'dark' ? '#ffffff' : '#121212',
+          border: '1px solid ' + alpha(theme.palette.divider, 0.1),
+        }}>
+          <Typography variant="h6" gutterBottom sx={{ color: appSettings.primaryColor }}>
+            Sample Heading
+          </Typography>
+          
+          <Typography variant="body1" gutterBottom>
+            This is how your content will look with the selected theme settings.
+          </Typography>
+          
+          <Box sx={{ mt: 2, display: 'flex', alignItems: 'center' }}>
+            <Button 
+              variant="contained" 
+              sx={{ bgcolor: appSettings.primaryColor, mr: 2 }}
+            >
+              Primary Button
+            </Button>
+            
+            <Button 
+              variant="outlined" 
+              sx={{ color: appSettings.primaryColor, borderColor: appSettings.primaryColor }}
+            >
+              Secondary Button
+            </Button>
+          </Box>
+          
+          <Box sx={{ mt: 2 }}>
+            <Typography variant="body2" gutterBottom>
+              Currency Format Example:
+            </Typography>
+            <Typography variant="h6">
+              {new Intl.NumberFormat(appSettings.locale, {
+                style: 'currency',
+                currency: appSettings.currency,
+                minimumFractionDigits: 0
+              }).format(1234567)}
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+    </Paper>
+  );
+  
+  // 6. Security and Privacy Tab
+  const renderSecurityPrivacyTab = () => (
+    <Paper 
+      elevation={0}
+      sx={{ 
+        ...styles.cardBase,
+        ...styles.cardHover,
+      }}
+    >
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Avatar sx={styles.avatarStyle(theme.palette.warning.main)}>
+            <SecurityIcon />
+          </Avatar>
+          <Typography variant="h6" fontWeight="bold">
+            Security & Privacy
+          </Typography>
+        </Box>
+      </Box>
+      
+      {/* Security Settings */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.warning.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Security Settings
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.twoFactorAuth} 
+                onChange={handleToggleChange('twoFactorAuth')}
+                color="primary"
+              />
+            }
+            label="Two-Factor Authentication (2FA)"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Add an extra layer of security to your account
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.biometricLogin} 
+                onChange={handleToggleChange('biometricLogin')}
+                color="primary"
+              />
+            }
+            label="Biometric Login"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Use fingerprint or face recognition to log in (on supported devices)
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <Typography variant="subtitle2" gutterBottom>
+            Auto-Lock Timeout
+          </Typography>
+          <FormControl fullWidth sx={{ mt: 1 }}>
+            <Select
+              value={appSettings.autoLockTimeout}
+              onChange={handleSelectChange('autoLockTimeout')}
+              size="small"
+            >
+              <MenuItem value={1}>1 minute</MenuItem>
+              <MenuItem value={5}>5 minutes</MenuItem>
+              <MenuItem value={15}>15 minutes</MenuItem>
+              <MenuItem value={30}>30 minutes</MenuItem>
+              <MenuItem value={0}>Never</MenuItem>
+            </Select>
+            <FormHelperText>
+              Automatically lock the app after period of inactivity
+            </FormHelperText>
+          </FormControl>
+        </Box>
+      </Box>
+      
+      {/* Privacy Settings */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.warning.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Privacy Settings
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.hideBalances} 
+                onChange={handleToggleChange('hideBalances')}
+                color="primary"
+              />
+            }
+            label="Hide Balances by Default"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Mask financial information until explicitly revealed
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.shareDataForAnalytics} 
+                onChange={handleToggleChange('shareDataForAnalytics')}
+                color="primary"
+              />
+            }
+            label="Share Anonymous Data for Analytics"
+          />
+          <Typography variant="body2" color="text.secondary" sx={{ ml: 6.5 }}>
+            Help us improve the app by sharing anonymous usage data
+          </Typography>
+        </Box>
+      </Box>
+      
+      {/* Data Management */}
+      <Box sx={styles.section}>
+        <Box sx={styles.sectionHeader(theme.palette.warning.main)}>
+          <Typography variant="subtitle1" fontWeight="medium">
+            Data Management
+          </Typography>
+        </Box>
+        
+        <Box sx={styles.settingsItem}>
+          <FormControlLabel
+            control={
+              <Switch 
+                checked={appSettings.autoBackup} 
+                onChange={handleToggleChange('autoBackup')}
+                color="primary"
+              />
+            }
+            label="Automatic Backup"
+          />
+          
+          <Collapse in={appSettings.autoBackup}>
+            <Box sx={{ ml: 6.5, mt: 1 }}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Backup Frequency</InputLabel>
+                <Select
+                  value={appSettings.backupFrequency}
+                  onChange={handleSelectChange('backupFrequency')}
+                  label="Backup Frequency"
+                >
+                  <MenuItem value="daily">Daily</MenuItem>
+                  <MenuItem value="weekly">Weekly</MenuItem>
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
+          </Collapse>
+        </Box>
+        
+        <Grid container spacing={2} sx={{ mt: 1 }}>
+          <Grid item xs={12} sm={6}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="primary"
+              startIcon={<CloudDownloadIcon />}
+              sx={{ textTransform: 'none' }}
+            >
+              Export Data
+            </Button>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="primary"
+              startIcon={<CloudUploadIcon />}
+              sx={{ textTransform: 'none' }}
+            >
+              Import Data
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </Paper>
+  );
+  
+  // 7. Family Member Dialog
+  const renderMemberDialog = () => (
+    <Dialog
+      open={memberDialogOpen}
+      onClose={handleMemberDialogClose}
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{ sx: styles.dialogPaper }}
+    >
+      <DialogTitle>
+        {memberDialogMode === 'add' ? 'Add Family Member' : 'Edit Family Member'}
+      </DialogTitle>
+      
+      <DialogContent>
+        <Grid container spacing={2} sx={{ mt: 0.5 }}>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Name"
+              fullWidth
+              value={currentMember.name}
+              onChange={handleMemberInputChange('name')}
+              required
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth required>
+              <InputLabel>Role</InputLabel>
+              <Select
+                value={currentMember.role}
+                onChange={handleMemberInputChange('role')}
+                label="Role"
+              >
+                <MenuItem value="parent">Parent</MenuItem>
+                <MenuItem value="child">Child</MenuItem>
+                <MenuItem value="senior">Senior</MenuItem>
+                <MenuItem value="other">Other</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              value={currentMember.email}
+              onChange={handleMemberInputChange('email')}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Phone"
+              fullWidth
+              value={currentMember.phone}
+              onChange={handleMemberInputChange('phone')}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Date of Birth"
+              type="date"
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              value={currentMember.dob}
+              onChange={handleMemberInputChange('dob')}
+            />
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel>Avatar</InputLabel>
+              <Select
+                value={currentMember.avatar}
+                onChange={handleMemberInputChange('avatar')}
+                label="Avatar"
+              >
+                <MenuItem value="👤">👤 Default</MenuItem>
+                <MenuItem value="👨">👨 Man</MenuItem>
+                <MenuItem value="👩">👩 Woman</MenuItem>
+                <MenuItem value="👦">👦 Boy</MenuItem>
+                <MenuItem value="👧">👧 Girl</MenuItem>
+                <MenuItem value="👴">👴 Elderly Man</MenuItem>
+                <MenuItem value="👵">👵 Elderly Woman</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12} sm={6}>
+            <FormControl fullWidth>
+              <InputLabel>Color</InputLabel>
+              <Select
+                value={currentMember.color}
+                onChange={handleMemberInputChange('color')}
+                label="Color"
+                renderValue={(value) => (
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <Box 
+                      sx={{ 
+                        width: 20, 
+                        height: 20, 
+                        borderRadius: '50%', 
+                        bgcolor: value,
+                        mr: 1
+                      }}
+                    />
+                    {value}
+                  </Box>
+                )}
+              >
+                <MenuItem value="#1976d2">Blue</MenuItem>
+                <MenuItem value="#9c27b0">Purple</MenuItem>
+                <MenuItem value="#2e7d32">Green</MenuItem>
+                <MenuItem value="#d32f2f">Red</MenuItem>
+                <MenuItem value="#ed6c02">Orange</MenuItem>
+                <MenuItem value="#0288d1">Light Blue</MenuItem>
+                <MenuItem value="#795548">Brown</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={currentMember.isPrimary}
+                  onChange={handleMemberCheckboxChange}
+                  name="isPrimary"
+                />
+              }
+              label="Set as primary member"
+            />
+            <FormHelperText>
+              The primary member is the main account holder. Setting a new primary member will unset the current one.
+            </FormHelperText>
+          </Grid>
+        </Grid>
+      </DialogContent>
+      
+      <DialogActions sx={{ px: 3, pb: 3 }}>
+        <Button onClick={handleMemberDialogClose} color="inherit">
+          Cancel
+        </Button>
+        
+        <Button 
+          onClick={handleSaveMember}
+          variant="contained" 
+          color="primary"
+          disabled={!currentMember.name}
+        >
+          {memberDialogMode === 'add' ? 'Add Member' : 'Save Changes'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+  
+  // 8. Delete Confirmation Dialog
+  const renderDeleteConfirmationDialog = () => (
+    <Dialog
+      open={deleteDialogOpen}
+      onClose={handleDeleteDialogClose}
+      PaperProps={{ sx: styles.dialogPaper }}
+    >
+      <DialogTitle>
+        Confirm Delete
+      </DialogTitle>
+      
+      <DialogContent>
+        <Typography>
+          Are you sure you want to delete {memberToDelete?.name}? This action cannot be undone.
+        </Typography>
+      </DialogContent>
+      
+      <DialogActions sx={{ px: 3, pb: 3 }}>
+        <Button onClick={handleDeleteDialogClose} color="inherit">
+          Cancel
+        </Button>
+        
+        <Button 
+          onClick={confirmDeleteMember}
+          variant="contained" 
+          color="error"
+        >
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+
+  // ============================================================
+  // MAIN RENDER - The settings layout
+  // ============================================================
+  return (
+    <Box sx={styles.pageContainer}>
+      {/* Header */}
+      {renderHeader()}
+
+      {/* Tabs */}
+      {renderSettingsTabs()}
+      
+      {/* Tab Content */}
+      <Box sx={{ mt: 3 }}>
+        {currentTab === 0 && renderProfileTab()}
+        {currentTab === 1 && renderFamilyMembersTab()}
+        {currentTab === 2 && renderAppearanceTab()}
+        {currentTab === 3 && renderSecurityPrivacyTab()}
+      </Box>
+      
+      {/* Dialogs */}
+      {renderMemberDialog()}
+      {renderDeleteConfirmationDialog()}
     </Box>
   );
 };

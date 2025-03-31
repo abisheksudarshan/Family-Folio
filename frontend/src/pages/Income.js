@@ -917,8 +917,8 @@ const Income = () => {
                   dataKey="income" 
                   stroke="#FFFFFF" 
                   strokeWidth={2}
-                  dot={{ fill: '#FFFFFF', stroke: 'rgba(255,255,255,0.5)', strokeWidth: 2, r: 4 }}
-                  activeDot={{ r: 6, fill: '#FFFFFF', stroke: 'rgba(255,255,255,0.5)', strokeWidth: 2 }}
+                  dot={false}
+                  activeDot={false}
                 />
               </LineChart>
             </ResponsiveContainer>

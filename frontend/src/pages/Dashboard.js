@@ -547,11 +547,11 @@ const Dashboard = () => {
   // Filter transactions based on tab and search
   const filteredTransactions = recentTransactions.filter(transaction => {
     // Filter by tab
-    if (transactionTab === 1 && transaction.amount < 0 && transaction.category !== 'investment') return true;
-    if (transactionTab === 2 && transaction.amount > 0) return true;
+    if (transactionTab === 1 && transaction.amount > 0) return true;
+    if (transactionTab === 2 && transaction.amount < 0 && transaction.category !== 'investment') return true;
     if (transactionTab === 3 && transaction.category === 'investment') return true;
     if (transactionTab === 0) return true;
-    
+      
     // Filter by search
     if (searchQuery && !transaction.description.toLowerCase().includes(searchQuery.toLowerCase())) {
       return false;
@@ -1676,8 +1676,8 @@ const Dashboard = () => {
               scrollButtons="auto"
             >
               <Tab label="All" />
-              <Tab label="Expenses" />
               <Tab label="Income" />
+              <Tab label="Expenses" />
               <Tab label="Investments" />
             </Tabs>
             

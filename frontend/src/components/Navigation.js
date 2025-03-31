@@ -38,7 +38,6 @@ import SavingsIcon from '@mui/icons-material/Savings';
 import CalculateIcon from '@mui/icons-material/Calculate';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import SettingsIcon from '@mui/icons-material/Settings';
-import PersonIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ExpandLess from '@mui/icons-material/ExpandLess';
 import ExpandMore from '@mui/icons-material/ExpandMore';
@@ -183,12 +182,25 @@ const Navigation = () => {
         p: 2, 
         display: 'flex', 
         alignItems: 'center', 
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        background: `linear-gradient(120deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
+        color: 'white',
+        position: 'relative',
+        overflow: 'hidden'
       }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box 
+          onClick={() => handleNavigation('/dashboard')}
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            cursor: 'pointer',
+            position: 'relative',
+            zIndex: 2
+          }}
+        >
           <Avatar 
             sx={{ 
-              bgcolor: theme.palette.primary.main, 
+              bgcolor: alpha('#fff', 0.2), 
               width: 40, 
               height: 40,
               mr: 1.5
@@ -200,8 +212,23 @@ const Navigation = () => {
             Family Folio
           </Typography>
         </Box>
+        <Box 
+          sx={{ 
+            position: 'absolute', 
+            top: -20, 
+            right: -20, 
+            width: '40%', 
+            height: '200%', 
+            opacity: 0.1, 
+            background: `radial-gradient(circle, white 0%, transparent 70%)` 
+          }}
+        />
         {isMobile && (
-          <IconButton onClick={handleDrawerToggle} size="small">
+          <IconButton 
+            onClick={handleDrawerToggle} 
+            size="small"
+            sx={{ color: 'white', position: 'relative', zIndex: 2 }}
+          >
             <ChevronLeftIcon />
           </IconButton>
         )}
@@ -209,7 +236,15 @@ const Navigation = () => {
       <Divider />
       
       {/* User profile section */}
-      <Box sx={{ px: 3, py: 2, display: 'flex', alignItems: 'center' }}>
+      <Box 
+        sx={{ 
+          px: 3, 
+          py: 2, 
+          display: 'flex', 
+          alignItems: 'center',
+          bgcolor: alpha(theme.palette.primary.main, 0.04)
+        }}
+      >
         <Avatar 
           sx={{ 
             bgcolor: alpha(theme.palette.primary.main, 0.1), 
@@ -230,10 +265,10 @@ const Navigation = () => {
           </Typography>
         </Box>
       </Box>
-      <Divider sx={{ mb: 2 }} />
+      <Divider />
       
       {/* Navigation Links */}
-      <List sx={{ flexGrow: 1, px: 2 }}>
+      <List sx={{ flexGrow: 1, px: 2, py: 1 }}>
         {navigationItems.map((item) => (
           <React.Fragment key={item.id}>
             {item.hasSubmenu ? (
@@ -335,8 +370,8 @@ const Navigation = () => {
                       : 'inherit',
                     '&:hover': {
                       backgroundColor: isRouteActive(item.path) 
-                        ? alpha(theme.palette.primary.main, 0.06) 
-                        : alpha(theme.palette.grey[100], 0.5)
+                        ? alpha(theme.palette.primary.main, 0.15) 
+                        : alpha(theme.palette.action.hover, 0.3)
                     }
                   }}
                 >
@@ -370,23 +405,26 @@ const Navigation = () => {
           <ListItem disablePadding>
             <ListItemButton 
               onClick={() => handleNavigation('/settings')}
-              sx={{ borderRadius: 2 }}
+              sx={{ 
+                borderRadius: 2,
+                backgroundColor: isRouteActive('/settings') 
+                  ? alpha(theme.palette.primary.main, 0.08) 
+                  : 'transparent',
+                color: isRouteActive('/settings') 
+                  ? theme.palette.primary.main 
+                  : 'inherit',
+              }}
             >
-              <ListItemIcon>
+              <ListItemIcon
+                sx={{ 
+                  color: isRouteActive('/settings') 
+                    ? theme.palette.primary.main 
+                    : 'inherit' 
+                }}
+              >
                 <SettingsIcon />
               </ListItemIcon>
               <ListItemText primary="Settings" />
-            </ListItemButton>
-          </ListItem>
-          <ListItem disablePadding>
-            <ListItemButton 
-              onClick={() => handleNavigation('/profile')}
-              sx={{ borderRadius: 2 }}
-            >
-              <ListItemIcon>
-                <PersonIcon />
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
             </ListItemButton>
           </ListItem>
           <ListItem disablePadding>
@@ -424,12 +462,6 @@ const Navigation = () => {
         }
       }}
     >
-      <MenuItem onClick={() => { handleMenuClose(); navigate('/profile'); }}>
-        <ListItemIcon>
-          <PersonIcon fontSize="small" />
-        </ListItemIcon>
-        Profile
-      </MenuItem>
       <MenuItem onClick={() => { handleMenuClose(); navigate('/settings'); }}>
         <ListItemIcon>
           <SettingsIcon fontSize="small" />
@@ -450,13 +482,11 @@ const Navigation = () => {
     <Box sx={{ display: 'flex' }}>
       <AppBar 
         position="fixed" 
-        elevation={0}
+        elevation={2}
         sx={{ 
           zIndex: (theme) => theme.zIndex.drawer + 1,
           backgroundColor: '#fff',
           color: 'text.primary',
-          borderBottom: '1px solid',
-          borderColor: 'divider'
         }}
       >
         <Toolbar>
@@ -474,18 +504,39 @@ const Navigation = () => {
             <MenuIcon />
           </IconButton>
           
-          <Typography 
-            variant="h6" 
-            noWrap 
-            component="div" 
+          <Box 
+            onClick={() => handleNavigation('/dashboard')}
             sx={{ 
-              display: { xs: 'none', sm: 'block' },
-              fontWeight: 'bold',
-              color: theme.palette.primary.main
+              display: 'flex', 
+              alignItems: 'center',
+              cursor: 'pointer'
             }}
           >
-            Family Folio
-          </Typography>
+            <Avatar 
+              sx={{ 
+                bgcolor: alpha(theme.palette.primary.main, 0.1), 
+                color: theme.palette.primary.main,
+                width: 36, 
+                height: 36,
+                mr: 1.5
+              }}
+            >
+              <PaymentsIcon />
+            </Avatar>
+            <Typography 
+              variant="h5" 
+              noWrap 
+              component="div" 
+              sx={{ 
+                display: { xs: 'none', sm: 'block' },
+                fontWeight: 'bold',
+                color: theme.palette.primary.main,
+                letterSpacing: '-0.5px'
+              }}
+            >
+              Family Folio
+            </Typography>
+          </Box>
           
           <Box sx={{ flexGrow: 1 }} />
           
@@ -562,7 +613,7 @@ const Navigation = () => {
             width: drawerWidth, 
             boxSizing: 'border-box',
             border: 'none',
-            boxShadow: isMobile ? '0 8px 24px rgba(0,0,0,0.12)' : 'none'
+            boxShadow: isMobile ? '0 8px 24px rgba(0,0,0,0.12)' : '2px 0 20px rgba(0,0,0,0.04)'
           },
         }}
       >
